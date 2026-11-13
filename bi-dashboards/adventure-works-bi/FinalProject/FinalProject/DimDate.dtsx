@@ -1,0 +1,72 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="11/30/2023 11:17:11 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="N2D"
+  DTS:CreatorName="N2D\duann"
+  DTS:DTSID="{AD32DF21-0000-4A99-8BEC-8907B7331FED}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5270.0"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="DimDate"
+  DTS:PackageType="5"
+  DTS:VersionBuild="6"
+  DTS:VersionGUID="{CD7469A3-57BD-408E-A00B-7F10E375FCAF}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[N2D.AdventureWorksDW 1]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{95A9CE04-3C7B-44A8-82BE-AD6F28AD3D00}"
+      DTS:ObjectName="N2D.AdventureWorksDW 1">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=N2D;Initial Catalog=AdventureWorksDW;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Create DimDate Table"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{3C76E453-A776-491C-A6E1-743530E41070}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Create DimDate Table"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{379FF107-CD67-425E-880A-E7D3F6465E48}"
+          SQLTask:SqlStatementSource="DELETE FROM [dw].[DimDate]&#xA;&#xA;-- Continue inserting data into [dw].[DimDate]&#xA;DECLARE @StartDate DATETIME = '01/01/2005'; -- Starting value of Date Range&#xA;DECLARE @EndDate DATETIME = '12/31/2014'; -- End Value of Date Range&#xA;&#xA;-- Temporary Variables To Hold the Values During Processing of Each Date of Year&#xA;DECLARE&#xA;    @DayOfWeekInMonth INT,&#xA;    @DayOfWeekInYear INT,&#xA;    @DayOfQuarter INT,&#xA;    @CurrentYear INT,&#xA;    @CurrentMonth INT,&#xA;    @CurrentQuarter INT&#xA;&#xA;/*Table Data type to store the day of week count for the month and year*/&#xA;DECLARE @DayOfWeek TABLE (DOW INT, MonthCount INT, QuarterCount INT, YearCount INT)&#xA;&#xA;-- Existing values in the @DayOfWeek table&#xA;INSERT INTO @DayOfWeek VALUES (1, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (2, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (3, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (4, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (5, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (6, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (7, 0, 0, 0)&#xA;&#xA;-- Extract and assign various parts of Values from Current Date to Variable&#xA;DECLARE @CurrentDate AS DATETIME = @StartDate&#xA;SET @CurrentMonth = DATEPART(MM, @CurrentDate)&#xA;SET @CurrentYear = DATEPART(YY, @CurrentDate)&#xA;SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)&#xA;&#xA;/********************************************************************************************/&#xA;-- Proceed only if Start Date(Current date) is less than End date you specified above&#xA;&#xA;WHILE @CurrentDate &lt; @EndDate&#xA;BEGIN&#xA;&#xA;    /*Begin day of week logic*/&#xA;&#xA;    /*Check for Change in Month of the Current date if Month changed then &#xA;      Change variable value*/&#xA;    IF @CurrentMonth != DATEPART(MM, @CurrentDate) &#xA;    BEGIN&#xA;        UPDATE @DayOfWeek&#xA;        SET MonthCount = 0&#xA;        SET @CurrentMonth = DATEPART(MM, @CurrentDate)&#xA;    END&#xA;&#xA;    /* Check for Change in Quarter of the Current date if Quarter changed then change &#xA;     Variable value*/&#xA;&#xA;    IF @CurrentQuarter != DATEPART(QQ, @CurrentDate)&#xA;    BEGIN&#xA;        UPDATE @DayOfWeek&#xA;        SET QuarterCount = 0&#xA;        SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)&#xA;    END&#xA;&#xA;    /* Check for Change in Year of the Current date if Year changed then change &#xA;     Variable value*/&#xA;&#xA;    IF @CurrentYear != DATEPART(YY, @CurrentDate)&#xA;    BEGIN&#xA;        UPDATE @DayOfWeek&#xA;        SET YearCount = 0&#xA;        SET @CurrentYear = DATEPART(YY, @CurrentDate)&#xA;    END&#xA;&#xA;    -- Set values in table data type created above from variables &#xA;&#xA;    UPDATE @DayOfWeek&#xA;    SET &#xA;        MonthCount = MonthCount + 1,&#xA;        QuarterCount = QuarterCount + 1,&#xA;        YearCount = YearCount + 1&#xA;    WHERE DOW = DATEPART(DW, @CurrentDate)&#xA;&#xA;    SELECT&#xA;        @DayOfWeekInMonth = MonthCount,&#xA;        @DayOfQuarter = QuarterCount,&#xA;        @DayOfWeekInYear = YearCount&#xA;    FROM @DayOfWeek&#xA;    WHERE DOW = DATEPART(DW, @CurrentDate)&#xA;&#xA;    /*End day of week logic*/&#xA;&#xA;    /* Populate Your Dimension Table with values*/&#xA;    INSERT INTO [dw].[DimDate]&#xA;    SELECT&#xA;        CONVERT (char(8),@CurrentDate,112) as DateKey,&#xA;        @CurrentDate AS FullDateAlternateKey,&#xA;        DATEPART(DW, @CurrentDate) AS DayNumberOfWeek,&#xA;        DATENAME(DW, @CurrentDate) AS DayNameOfWeek,&#xA;        DAY(@CurrentDate) AS DayNumberOfMonth,&#xA;        DATEPART(DY, @CurrentDate) AS DayNumberOfYear,&#xA;        DATEPART(WW, @CurrentDate) AS WeekNumberOfYear,&#xA;        DATENAME(MM, @CurrentDate) AS MonthName,&#xA;        MONTH(@CurrentDate) AS MonthNumberOfYear,&#xA;        DATEPART(QQ, @CurrentDate) AS CalendarQuarter,&#xA;        YEAR(@CurrentDate) AS CalendarYear,&#xA;        (MONTH(@CurrentDate) + 2) / 3 AS CalendarSemester,&#xA;        DATEPART(QQ, DATEADD(MM, -3, @CurrentDate)) AS FiscalQuarter,&#xA;        YEAR(DATEADD(MM, -3, @CurrentDate)) AS FiscalYear,&#xA;        (MONTH(DATEADD(MM, -3, @CurrentDate)) + 2) / 3 AS FiscalSemester&#xA;&#xA;    SET @CurrentDate = DATEADD(DD, 1, @CurrentDate)&#xA;END&#xA;&#xA;/********************************************************************************************/&#xA;-- Display Data from [dw].[DimDate]&#xA;SELECT * FROM [dw].[DimDate]&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="181.6,41.6"
+          Id="Package\Create DimDate Table"
+          TopLeft="286.666655275557,146.466667830679" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
