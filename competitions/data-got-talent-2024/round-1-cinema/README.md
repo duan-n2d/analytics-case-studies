@@ -20,16 +20,12 @@ This project analyzes the performance of DGT Cinema in May 2019, focusing on thr
 
 ## Files Included
 
-1. **Data File Excel include**:
-   - `customer`: Information about customer demographics and behavior.
-   - `film`: Details about the movies shown, including genres and origins.
-   - `ticket`: Sales data including ticket types, pricing, and purchase channels.
-
-2. **Power BI Dashboard**:
-   - `DGT.pbix`: Interactive visualizations presenting key metrics and trends for easy analysis.
-
-3. **Documentation**:
+1. **Documentation**:
    - `DGT.pdf`: Comprehensive analysis document detailing findings, insights, and recommendations.
+
+2. **Dashboard screenshots** (above).
+
+The competition dataset (an Excel workbook with `customer`, `film` and `ticket` sheets, including customer demographics) belongs to the Data Got Talent organizers and is **not included** in this repository. The Power BI file (`DGT.pbix`) is not included either, because it embeds that data.
 
 ## Tools and Technologies
 

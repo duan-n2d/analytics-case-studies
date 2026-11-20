@@ -19,53 +19,34 @@ To run the notebooks in this project, install the following Python libraries:
 pip install numpy pandas scikit-learn matplotlib seaborn pmdarima keras statsmodels
 ```
 
+## Data
+
+The competition data (WA TAB betting transactions and player demographics) belongs to the Data Got Talent 2024 organizers and is **not included** in this repository. Customer-level files derived from it (`CusData.csv`, `rfm_c.csv`, `rfm_2021.csv`, `rfm_2022.csv`) are not included either. The notebooks therefore cannot be re-run as-is; their saved outputs show the results.
+
 ## Project Structure
 
 ```bash
-
 |-- data
-|   |-- CusData.csv
-|   |-- ForecastTotalTurnover.csv
-|   |-- rfm_2021.csv
-|   |-- rfm_2022.csv
-|   |-- rfm_c.csv
-|   |-- TAB_Betting_Data.csv
-|   |-- TransactionData.csv
+|   |-- ForecastTotalTurnover.csv   # aggregate Q1 2023 revenue forecast
 |
-|-- models
-|   |-- best_arima_model.pkl
-|   |-- best_gru_model.pkl
-|   |-- best_lstm_model.pkl
-|
-|-- EDA.ipynb
-|-- TimeSeries.ipynb
+|-- EDA_Data.ipynb
+|-- Time Series.ipynb
 |-- RFM.ipynb
 |-- RFMbyYear.ipynb
 |-- Pentagon_Slide.pdf
 |-- Pentagon_Report.pdf
-|-- RWWA.pbix
 ```
 
 ### Description of Project Components:
-- `data` folder: Contains the provided and generated data files during the analysis process.
-  - `TAB_Betting_Data.csv`: Betting transaction data provided by the organizers. [Link](https://zrcy7-my.sharepoint.com/:x:/g/personal/ndoubled26_zrcy7_onmicrosoft_com/EfXNOsY7tOlEkaOUmszG7zUBLIKjzYkPg5WO6WgiplR0XA?e=FsTXPs)
-  - `CustData.csv`: Demographic data of individual players after data exploration and cleaning. [Link](https://zrcy7-my.sharepoint.com/:x:/g/personal/ndoubled26_zrcy7_onmicrosoft_com/ESPsU6ArpRtEgsbUDKNV9JEBijfRpNtNVG_uhcA-enpiqw?e=D13sBB)
-  - `TransactionData.csv`: Transaction data after removing demographic factors of players.
-  - `rfm_c.csv`, `rfm_2021.csv`, `rfm_2022.csv`: Stores R, F, M metrics for each player across the entire dataset and separately for each year.
-  - `ForecastTotalTurnover.csv`: Predicted revenue for Q1 2023 of the business.
+- `data/ForecastTotalTurnover.csv`: Predicted revenue for Q1 2023 of the business.
 
-- `models` folder (not committed — regenerate by running `Time Series.ipynb`): trained models used to forecast WA TAB revenue.
-  - `best_arima_model.pkl`: The most optimal ARIMA model selected by the team.
-  - `best_gru_model.pkl`: The most optimal RNN GRU model identified after multiple tests.
-  - `best_lstm_model.pkl`: The most optimal RNN LSTM model identified after multiple tests.
+- `EDA_Data.ipynb`: Explores and cleans the raw betting data (expects `TAB_Betting_Data.csv`, not included) and splits it into player demographics (`CusData.csv`) and transactions (`TransactionData.csv`).
 
-- `EDA.ipynb`: Executes the process of exploring and cleaning the raw data.
+- `Time Series.ipynb`: Converts transactions into a daily time series, builds and evaluates ARIMA, GRU and LSTM models, and forecasts revenue. Trained models (`best_arima_model.pkl`, `best_gru_model.pkl`, `best_lstm_model.pkl`) are not committed.
 
-- `TimeSeries.ipynb`: Converts raw data into time-series data by day, builds and evaluates models, and forecasts revenue.
+- `RFM.ipynb`, `RFMbyYear.ipynb`: Calculate R, F, M metrics per player across the whole dataset and separately by year to evaluate customer trends.
 
-- `RFM.ipynb`, `RFMbyYear.ipynb`: Calculates R, F, M metrics, stores them in `rfm_c.csv`, and calculates them separately by year to evaluate customer trends, storing results in `rfm_2021.csv` and `rfm_2022.csv`.
-
-- `Pentagon_Slide.pdf` and `Pentagon_Report.pdf`, `RWWA.pbix`: The team's report on predictions and business analysis.
+- `Pentagon_Slide.pdf` and `Pentagon_Report.pdf`: The team's report on predictions and business analysis. The Power BI report is linked below.
 
 ## Visualization Analysis
 [Business Performance Report of WA TAB](https://app.powerbi.com/view?r=eyJrIjoiNGZiMDAwZTUtZjU3NC00YjM1LThmYjktMjBhZTg0NTljYmY0IiwidCI6IjY4NDJkZjllLTQwMmUtNDg1OC04OTNiLTY5YzIwNGUxOTgyMSIsImMiOjEwfQ%3D%3D&pageName=ReportSection&fbclid=IwAR3u9Ox69hszMHjlqyLpCYPYoOFMd0S-UV8hVDfp_lF802CL3RvBvzVc2f4_aem_ASIYly-TgWpv9NVkATJKZDRNGJ7RRZh5u-nsxj5ov1Oy6h_i9U8A5ETUQt3UtCGI3P3stsS0TotffyNo3ug5JVwM)
